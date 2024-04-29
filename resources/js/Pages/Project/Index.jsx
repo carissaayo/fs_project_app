@@ -4,8 +4,11 @@ import Pagination from "@/Components/Pagination";
 import SelectInput from "@/Components/SelectInput";
 import TextInput from "@/Components/TextInput";
 import Authenticated from "@/Layouts/AuthenticatedLayout";
+import { ScrollArea, ScrollBar } from "@/Components/ui/scroll-area";
 
 import { PROJECT_STATUS_CLASS_MAP, PROJECT_STATUS_TEXT_MAP } from "@/constants";
+
+import TableHeading from "@/Components/TableHeading";
 
 const Index = ({ auth, projects, queryParams = null }) => {
   queryParams = queryParams || {};
@@ -43,54 +46,79 @@ const Index = ({ auth, projects, queryParams = null }) => {
     <Authenticated
       user={auth.user}
       header={
-        <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-          Project
-        </h2>
+        <div className="flex items-center justify-between">
+          <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            Projects
+          </h2>
+          <Link
+            href={route("project.create")}
+            className="bg-emerald-500 py-1 px-3 text-white rounded shadow transition-all hover:bg-emerald-600"
+          >
+            Add New Project
+          </Link>
+        </div>
       }
     >
       <Head title="Projects" />
-
       <div className="py-12">
         <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+          {success && (
+            <div className="bg-emerald-500 py-2 px-4 text-white rounded mb-4">
+              {success}
+            </div>
+          )}
           <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
             <div className="p-6 text-gray-900 dark:text-gray-100">
-              <div className="overflow-auto">
-                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+              <ScrollArea className=" w-full h-full  ">
+                <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 min-w-[1000px] mb-3 ">
                   <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 border-b-2 border-gray-500">
                     <tr className="text-nowrap">
-                      <th
-                        onClick={() => sortChanged("id")}
-                        className="px-3 py-2"
+                      <TableHeading
+                        name="id"
+                        sort_field={queryParams.sort_field}
+                        sort_direction={queryParams.sort_direction}
+                        sortChanged={sortChanged}
                       >
                         ID
-                      </th>
-                      <th className="px-3 py-2">Image</th>
-                      <th
-                        onClick={() => sortChanged("name")}
-                        className="px-3 py-2"
+                      </TableHeading>
+                      <th className="px-3 py-3">Image</th>
+                      <TableHeading
+                        name="name"
+                        sort_field={queryParams.sort_field}
+                        sort_direction={queryParams.sort_direction}
+                        sortChanged={sortChanged}
                       >
                         Name
-                      </th>
-                      <th
-                        onClick={() => sortChanged("status")}
-                        className="px-3 py-2"
+                      </TableHeading>
+
+                      <TableHeading
+                        name="status"
+                        sort_field={queryParams.sort_field}
+                        sort_direction={queryParams.sort_direction}
+                        sortChanged={sortChanged}
                       >
                         Status
-                      </th>
-                      <th
-                        onClick={() => sortChanged("created_date")}
-                        className="px-3 py-2"
+                      </TableHeading>
+
+                      <TableHeading
+                        name="created_at"
+                        sort_field={queryParams.sort_field}
+                        sort_direction={queryParams.sort_direction}
+                        sortChanged={sortChanged}
                       >
                         Create Date
-                      </th>
-                      <th
-                        onClick={() => sortChanged("due_date")}
-                        className="px-3 py-2"
+                      </TableHeading>
+
+                      <TableHeading
+                        name="due_date"
+                        sort_field={queryParams.sort_field}
+                        sort_direction={queryParams.sort_direction}
+                        sortChanged={sortChanged}
                       >
                         Due Date
-                      </th>
-                      <th className="px-3 py-2">Created By</th>
-                      <th className="px-3 py-2 pl-3">Actions</th>
+                      </TableHeading>
+                      <th className="px-3 py-3">Created By</th>
+                      <th className="px-3 py-3 text-right">Actions</th>
                     </tr>
                   </thead>
 
@@ -101,7 +129,7 @@ const Index = ({ auth, projects, queryParams = null }) => {
                       <th className="px-3 py-2">
                         <TextInput
                           defaultValue={queryParams?.name}
-                          className="w-full"
+                          className="w-full h-12 px-4"
                           placeholder="Project Name"
                           onBlur={(e) => searchFieldChanged("name", e)}
                           onKeyPress={(e) => onKeyPress("name", e)}
@@ -109,7 +137,7 @@ const Index = ({ auth, projects, queryParams = null }) => {
                       </th>
                       <th className="px-3 py-2">
                         <SelectInput
-                          className="w-full"
+                          className="min-w-12 h-12 px-4 text-base"
                           defaultValue={queryParams?.status}
                           onChange={(e) =>
                             searchFieldChanged("status", e.target.value)
@@ -141,7 +169,11 @@ const Index = ({ auth, projects, queryParams = null }) => {
                             style={{ width: 60 }}
                           />
                         </td>
-                        <td className="px-3 py-2">{project.name}</td>
+                        <td className="px-3 py-2 hover:underline text-white text-nowrap">
+                          <Link href={route("project.show", project.id)}>
+                            {project.name}
+                          </Link>
+                        </td>
                         <td className="px-3 py-2">
                           <span
                             className={
@@ -174,7 +206,11 @@ const Index = ({ auth, projects, queryParams = null }) => {
                     ))}
                   </tbody>
                 </table>
-              </div>
+                <ScrollBar
+                  orientation="horizontal"
+                  className="border-2 border-gray-700 w-full"
+                />
+              </ScrollArea>
 
               <Pagination links={projects?.meta.links} />
             </div>
